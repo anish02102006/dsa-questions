@@ -1,0 +1,73 @@
+Intuition
+We are given an array nums, and we need to count the number of special triplets (i, j, k) such that:
+
+0 ≤ i < j < k < n
+nums[i] == nums[k] == 2 * nums[j]
+The key observation is that for each position j, we can try to count how many elements on the left and right of j satisfy this condition:
+
+nums[i] == 2 * nums[j] (on the left)
+nums[k] == 2 * nums[j] (on the right)
+So for every possible middle point j, we multiply the count of valid i and k values and add it to the answer.
+
+✅ Approach
+Precompute the frequency of all elements in a right-side counter cntRight.
+
+Iterate through the array, using each index as j (the middle of the triplet):
+
+Decrease the right-side count of nums[j]
+Check how many 2 * nums[j] exist in cntLeft and cntRight
+The number of valid triplets for this j is: cntLeft[2 * nums[j]] * cntRight[2 * nums[j]]
+Update cntLeft[nums[j]] after processing
+🧪 Example
+Input: nums = [1, 2, 1, 4, 2, 1, 4]
+
+For j = 1 (nums[j] = 2):
+  2 * 2 = 4
+  On the left of index 1: [1] → no 4s → cntLeft[4] = 0
+  On the right of index 1: [1, 4, 2, 1, 4] → two 4s → cntRight[4] = 2
+  → No triplet added (0 * 2 = 0)
+
+For j = 4 (nums[j] = 2):
+  On the left: [1, 2, 1, 4] → one 4 → cntLeft[4] = 1
+  On the right: [1, 4] → one 4 → cntRight[4] = 1
+  → One triplet added (1 * 1 = 1)
+
+Output = 1
+🧮 Time and Space Complexity
+Time Complexity: O(n)
+Space Complexity: O(max(nums))
+🔍 Code
+class Solution {
+    public int specialTriplets(int[] nums) {
+        int mod = 1_000_000_007;
+        int n = nums.length;
+        int max = 0;
+        for (int x : nums) max = Math.max(max, x);
+        int cap = 2 * max + 1;
+
+        int[] cntLeft = new int[cap];
+        int[] cntRight = new int[cap];
+
+        for (int x : nums) {
+            if (x < cap) cntRight[x]++;
+        }
+
+        long ans = 0;
+        for (int j = 0; j < n; j++) {
+            int y = nums[j];
+            cntRight[y]--;
+            if (2 * y < cap) {
+                ans = (ans + 1L * cntLeft[2 * y] * cntRight[2 * y]) % mod;
+                cntLeft[y]++;
+            }
+        }
+
+        return (int) ans;
+    }
+}
+🧱 Edge Cases to Consider
+Array of size < 3 → return 0 (no triplet possible)
+All elements are same → no 2 * nums[j] exists
+No valid triplet exists → returns 0 correctly
+Large numbers → handled using modulo
+Multiple duplicate values → all counted using frequency
