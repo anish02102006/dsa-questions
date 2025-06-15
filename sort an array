@@ -1,0 +1,56 @@
+link = https://leetcode.com/problems/sort-an-array/description/
+Intuition
+Quick Sort is a classic divide-and-conquer algorithm. The idea is to pick a pivot, partition the array around it so elements less than pivot are on the left, greater on the right, and recursively sort the subarrays.
+
+🛠️ Approach
+Select a pivot (here, the middle element).
+Use two pointers s and e to partition the array.
+Swap values so that elements less than pivot are on the left, and greater on the right.
+Recursively apply the same steps to left and right partitions.
+⏱️ Complexity
+Time Complexity: Average: O(nlogn), Worst: O(n 
+2
+ )
+Space Complexity: O(logn) due to recursion stack
+Please Upvote ⬆️
+Screenshot 2025-02-15 134751.png
+
+class Solution {
+    public int[] sortArray(int[] nums) {
+        quick(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    static void quick(int[] nums, int low, int high) {
+        // Base condition: single element or empty subarray
+        if (low >= high) return;
+
+        int s = low;
+        int e = high;
+        int mid = (s + e) / 2;
+        int pivot = nums[mid]; // Pivot chosen as middle element
+
+        // Partition the array around the pivot
+        while (s <= e) {
+            while (nums[s] < pivot) {
+                s++;
+            }
+            while (nums[e] > pivot) {
+                e--;
+            }
+
+            if (s <= e) {
+                // Swap elements on the wrong side
+                int temp = nums[s];
+                nums[s] = nums[e];
+                nums[e] = temp;
+                s++;
+                e--;
+            }
+        }
+
+        // Recursively sort the two halves
+        quick(nums, low, e);
+        quick(nums, s, high);
+    }
+}
